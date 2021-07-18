@@ -1,6 +1,7 @@
 package demo;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +28,10 @@ public class TryDemoNIO {
 		list.add(TryDemoNIO::tryFileToPath);
 		list.add(TryDemoNIO::tryPathGetRoot);
 		list.add(TryDemoNIO::tryReadFileNotFound);
-		list.add(TryDemoNIO::tryReadFile);
+		list.add(TryDemoNIO::tryReadFileLineByLine);
+		list.add(TryDemoNIO::tryReadFileUnbufferedLineByLine);
 		list.add(TryDemoNIO::tryReadFileAll);
+		list.add(TryDemoNIO::tryWriteFileLineByLine);
 		for (var r : list) {
 			r.run();
 		}
@@ -76,8 +80,25 @@ public class TryDemoNIO {
 		}
 	}
 	
-	private static void tryReadFile() {
-		System.out.println("******* TryReadFile *******");
+	private static void tryReadFileLineByLine() {
+		System.out.println("******* TryReadFileLineByLine *******");
+		
+		Path path = Paths.get("sample.txt");
+		try (BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"))) {
+		    String line = null;
+		    while ((line = reader.readLine()) != null) {
+		        System.out.println(line);
+		    }
+		} catch (NoSuchFileException  e) {
+		    System.err.println("File does not exist. File: " + e.getFile());
+		} catch (IOException  e) {
+		    System.err.println(e);
+		}
+	}
+	
+	
+	private static void tryReadFileUnbufferedLineByLine() {
+		System.out.println("******* TryReadFileUnbufferedLineByLine *******");
 		
 		Path path = Paths.get("sample.txt");
 		try (InputStream in = Files.newInputStream(path); BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
@@ -93,4 +114,24 @@ public class TryDemoNIO {
 
 	}
 	
+	
+	private static void tryWriteFileLineByLine() {
+		System.out.println("******* TtryWriteFileLineByLine *******");
+		
+		Path path = Paths.get("sample-out.txt");
+		
+		if (Files.exists(path)) { try { Files.delete(path); } catch (IOException e) { System.err.println(e); } }
+		
+		List<String> lines = List.of(String.format("Written at %s", LocalDate.now()), "Line1", "Line2", "Line3");
+		try (BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName("UTF-8"))) {
+		    for (String line : lines) {
+		    	writer.write(line);
+		    	writer.newLine();
+		    }
+		    System.out.println("Wrote file " + path);
+		} catch (IOException  e) {
+		    System.err.println(e);
+		}
+
+	}
 }
