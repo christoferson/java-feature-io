@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -18,13 +19,9 @@ import java.util.List;
 public class TryDemoNIO {
 
 	public static void main(String[] args) {
-		Path path = Paths.get("sample.txt");
-		System.out.println(path.toAbsolutePath().getFileName());
-		boolean exists = Files.exists(path);
-		System.out.println(exists);
-		
-		
+
 		List<Runnable> list = new ArrayList<Runnable>();
+		list.add(TryDemoNIO::tryFileExists);
 		list.add(TryDemoNIO::tryFileToPath);
 		list.add(TryDemoNIO::tryPathGetRoot);
 		list.add(TryDemoNIO::tryReadFileNotFound);
@@ -32,9 +29,20 @@ public class TryDemoNIO {
 		list.add(TryDemoNIO::tryReadFileUnbufferedLineByLine);
 		list.add(TryDemoNIO::tryReadFileAll);
 		list.add(TryDemoNIO::tryWriteFileLineByLine);
+		list.add(TryDemoNIO::tryFileCreateTemporaryFile);
+		list.add(TryDemoNIO::tryDirectoryExists);
+		list.add(TryDemoNIO::tryDirectoryStream);
+		
 		for (var r : list) {
 			r.run();
 		}
+	}
+	
+	private static void tryFileExists() {
+		System.out.println("******* TryFileExists *******");
+		Path path = Paths.get("sample.txt");
+		boolean exists = Files.exists(path);
+		System.out.println(exists);
 	}
 	
 	private static void tryFileToPath() {
@@ -116,7 +124,7 @@ public class TryDemoNIO {
 	
 	
 	private static void tryWriteFileLineByLine() {
-		System.out.println("******* TtryWriteFileLineByLine *******");
+		System.out.println("******* TryWriteFileLineByLine *******");
 		
 		Path path = Paths.get("sample-out.txt");
 		
@@ -133,5 +141,40 @@ public class TryDemoNIO {
 		    System.err.println(e);
 		}
 
+	}
+
+	private static void tryFileCreateTemporaryFile() {
+		System.out.println("******* TryFileCreateTemporaryFile *******");
+		Path path = Paths.get("sample-dir");
+		Path file;
+		try {
+			file = Files.createTempFile(path, "out-", ".tmp");
+			System.out.println(file);
+			Files.writeString(file,String.valueOf(LocalDate.now()), Charset.forName("UTF-8"));
+		} catch (IOException e) {
+			System.err.println(e);
+		}
+		System.out.println();
+	}
+	
+	private static void tryDirectoryExists() {
+		System.out.println("******* TryDirectoryExists *******");
+		Path path = Paths.get("sample-dir");
+		boolean exists = Files.exists(path);
+		System.out.println(exists);
+	}
+	
+	private static void tryDirectoryStream() {
+		System.out.println("******* TryDirectoryStream *******");
+		Path path = Paths.get("sample-dir");
+		DirectoryStream<Path> stream;
+		try {
+			stream = Files.newDirectoryStream(path, "dummy-1*.{txt}");
+			stream.forEach(System.out::println);
+		} catch (IOException e) {
+			System.err.println(e);
+		}
+		
+		System.out.println();
 	}
 }
