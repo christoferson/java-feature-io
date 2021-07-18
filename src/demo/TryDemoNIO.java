@@ -27,6 +27,8 @@ public class TryDemoNIO {
 		list.add(TryDemoNIO::tryPathGetRoot);
 		list.add(TryDemoNIO::tryPathAttributes);
 		list.add(TryDemoNIO::tryPathSibling);
+		list.add(TryDemoNIO::tryPathNormalize);
+		list.add(TryDemoNIO::tryPathResolve);
 		list.add(TryDemoNIO::tryReadFileNotFound);
 		list.add(TryDemoNIO::tryReadFileLineByLine);
 		list.add(TryDemoNIO::tryReadFileUnbufferedLineByLine);
@@ -85,6 +87,21 @@ public class TryDemoNIO {
 		System.out.println(Files.exists(sibling));
 	}
 
+	private static void tryPathNormalize() {
+		System.out.println("******* TryPathNormalize *******");
+		Path path = Paths.get("sample-dir\\.\\dummy-2.txt");
+		Path npath = path.normalize();
+		System.out.println("Original : " + path);
+		System.out.println("New      : " + npath);
+	}
+	
+	private static void tryPathResolve() {
+		System.out.println("******* TryPathResolve *******");
+		Path path = Paths.get("sample-dir");
+		Path npath = path.resolve("dummy-2.txt");
+		System.out.println(npath);
+	}
+	
 	private static void tryReadFileNotFound() {
 		System.out.println("******* TryReadFileNotFound *******");
 		
