@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,8 @@ public class TryDemoNIO {
 		list.add(TryDemoNIO::tryFileExists);
 		list.add(TryDemoNIO::tryFileToPath);
 		list.add(TryDemoNIO::tryPathGetRoot);
+		list.add(TryDemoNIO::tryPathAttributes);
+		list.add(TryDemoNIO::tryPathSibling);
 		list.add(TryDemoNIO::tryReadFileNotFound);
 		list.add(TryDemoNIO::tryReadFileLineByLine);
 		list.add(TryDemoNIO::tryReadFileUnbufferedLineByLine);
@@ -58,7 +61,30 @@ public class TryDemoNIO {
 		
 		System.out.println(path.getRoot());
 	}
+
+	private static void tryPathAttributes() {
+		System.out.println("******* TryPathAttributes *******");
+		Path path = Paths.get("sample-dir\\dummy-2.txt");
+		System.out.println("Exists   : " + Files.exists(path));
+		System.out.println("Parent   : " + path.getParent());
+		System.out.println("Root     : " + path.getRoot());
+		System.out.println("FileName : " + path.getFileName());
+		System.out.println("NameCount: " + path.getNameCount());
+		System.out.println("Name(0): " + path.getName(0));
+		System.out.println("Name(1): " + path.getName(1));
+		System.out.println("SubPath(0,2): " + path.subpath(0, 2));
+		Path sibling = path.resolveSibling("dummy-1.txt");
+		System.out.println(sibling);
+	}
 	
+	private static void tryPathSibling() {
+		System.out.println("******* TryPathSibling *******");
+		Path path = Paths.get("sample-dir\\dummy-2.txt");
+		Path sibling = path.resolveSibling("dummy-1.txt");
+		System.out.println(sibling);
+		System.out.println(Files.exists(sibling));
+	}
+
 	private static void tryReadFileNotFound() {
 		System.out.println("******* TryReadFileNotFound *******");
 		
@@ -143,6 +169,9 @@ public class TryDemoNIO {
 
 	}
 
+	// File.deleteOnExit()
+	// Runtime.getRuntime().addShutdownHook(new Thread() { ... });
+	// StandardOpenOption.DELETE_ON_CLOSE
 	private static void tryFileCreateTemporaryFile() {
 		System.out.println("******* TryFileCreateTemporaryFile *******");
 		Path path = Paths.get("sample-dir");
@@ -150,7 +179,7 @@ public class TryDemoNIO {
 		try {
 			file = Files.createTempFile(path, "out-", ".tmp");
 			System.out.println(file);
-			Files.writeString(file,String.valueOf(LocalDate.now()), Charset.forName("UTF-8"));
+			Files.writeString(file,String.valueOf(LocalDate.now()), Charset.forName("UTF-8"), StandardOpenOption.DELETE_ON_CLOSE);
 		} catch (IOException e) {
 			System.err.println(e);
 		}
