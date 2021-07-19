@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class TryDemoNIO {
 		list.add(TryDemoNIO::tryReadFileUnbufferedLineByLine);
 		list.add(TryDemoNIO::tryReadFileAll);
 		list.add(TryDemoNIO::tryWriteFileLineByLine);
+		list.add(TryDemoNIO::tryCopyFile);
 		list.add(TryDemoNIO::tryFileCreateTemporaryFile);
 		list.add(TryDemoNIO::tryDirectoryExists);
 		list.add(TryDemoNIO::tryDirectoryStream);
@@ -203,6 +205,23 @@ public class TryDemoNIO {
 		}
 
 	}
+	
+	private static void tryCopyFile() {
+		System.out.println("******* TryCopyFile *******");
+		
+		Path src = Paths.get("sample-out.txt");
+		Path dst = Paths.get("sample-out-copy.txt");
+		
+		//if (Files.exists(dst)) { try { Files.delete(dst); } catch (IOException e) { System.err.println(e); } }
+		
+		try {
+		    Files.copy(src,  dst, StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
+		    System.out.println(String.format("Copied file %s to %s.", src, dst));
+		} catch (IOException  e) {
+		    System.err.println(e);
+		}
+
+	}
 
 	// File.deleteOnExit()
 	// Runtime.getRuntime().addShutdownHook(new Thread() { ... });
@@ -241,4 +260,6 @@ public class TryDemoNIO {
 		
 		System.out.println();
 	}
+	
+	// copy move
 }
