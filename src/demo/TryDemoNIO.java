@@ -18,6 +18,8 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TryDemoNIO {
 
@@ -38,10 +40,11 @@ public class TryDemoNIO {
 		list.add(TryDemoNIO::tryReadFileAll);
 		list.add(TryDemoNIO::tryWriteFileLineByLine);
 		list.add(TryDemoNIO::tryCopyFile);
+		list.add(TryDemoNIO::tryMoveFile);
 		list.add(TryDemoNIO::tryFileCreateTemporaryFile);
 		list.add(TryDemoNIO::tryDirectoryExists);
 		list.add(TryDemoNIO::tryDirectoryStream);
-		
+		list.add(TryDemoNIO::tryStreamFilesFind);
 		for (var r : list) {
 			r.run();
 		}
@@ -222,6 +225,22 @@ public class TryDemoNIO {
 		}
 
 	}
+	
+	private static void tryMoveFile() {
+		System.out.println("******* TryMoveFile *******");
+		
+		Path src = Paths.get("sample-out-move-1.txt");
+		Path dst = Paths.get("sample-out-move-2.txt");
+		
+		try {
+		    Files.copy(Paths.get("sample-out.txt"),  src, StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
+		    Files.move(src, dst, StandardCopyOption.REPLACE_EXISTING);
+		    System.out.println(String.format("Moved file %s to %s.", src, dst));
+		} catch (IOException  e) {
+		    System.err.println(e);
+		}
+
+	}
 
 	// File.deleteOnExit()
 	// Runtime.getRuntime().addShutdownHook(new Thread() { ... });
@@ -261,5 +280,23 @@ public class TryDemoNIO {
 		System.out.println();
 	}
 	
-	// copy move
+	private static void tryStreamFilesFind() {
+		System.out.println("******* TryStreamFilesFind *******");
+		
+		Path rootpath = Paths.get(".");
+		
+		int maxDepth = 5;
+	    try (Stream<Path> stream = Files.find(rootpath, maxDepth, (path, attr) -> String.valueOf(path).endsWith(".txt"))) {
+	        String joined = stream
+	                .sorted()
+	                .map(String::valueOf)
+	                .collect(Collectors.joining("; "));
+	        System.out.println("Found: " + joined);
+	    } catch (Exception e) {
+	    	System.err.println(e);
+	    }
+
+	}
+	
+
 }
