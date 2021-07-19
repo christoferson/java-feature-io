@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -29,6 +30,7 @@ public class TryDemoNIO {
 		list.add(TryDemoNIO::tryPathSibling);
 		list.add(TryDemoNIO::tryPathNormalize);
 		list.add(TryDemoNIO::tryPathResolve);
+		list.add(TryDemoNIO::tryPathFactory);
 		list.add(TryDemoNIO::tryReadFileNotFound);
 		list.add(TryDemoNIO::tryReadFileLineByLine);
 		list.add(TryDemoNIO::tryReadFileUnbufferedLineByLine);
@@ -41,6 +43,7 @@ public class TryDemoNIO {
 		for (var r : list) {
 			r.run();
 		}
+		
 	}
 	
 	private static void tryFileExists() {
@@ -100,6 +103,21 @@ public class TryDemoNIO {
 		Path path = Paths.get("sample-dir");
 		Path npath = path.resolve("dummy-2.txt");
 		System.out.println(npath);
+	}
+	
+	private static void tryPathFactory() {
+		System.out.println("******* TryPathFactory *******");
+		{
+			Path path = Path.of("sample-dir", "dummy-2.txt");
+			System.out.println(path);
+			System.out.println(Files.exists(path));
+		}
+		{
+			URI uri = URI.create("file:///unknown.txt");
+			Path path = Path.of(uri);
+			System.out.println(path);
+			System.out.println(Files.exists(path));		
+		}
 	}
 	
 	private static void tryReadFileNotFound() {
