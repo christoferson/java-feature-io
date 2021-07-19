@@ -45,6 +45,9 @@ public class TryDemoNIO {
 		list.add(TryDemoNIO::tryDirectoryExists);
 		list.add(TryDemoNIO::tryDirectoryStream);
 		list.add(TryDemoNIO::tryStreamFilesFind);
+		list.add(TryDemoNIO::tryStreamFilesWalk);
+		list.add(TryDemoNIO::tryStreamFilesLines);
+		
 		for (var r : list) {
 			r.run();
 		}
@@ -298,5 +301,30 @@ public class TryDemoNIO {
 
 	}
 	
+	private static void tryStreamFilesWalk() {
+		System.out.println("******* TryStreamFilesWalk *******");
+		
+		Path rootpath = Paths.get("./sample-dir");
+		
+		int maxDepth = 2;
+	    try (Stream<Path> stream = Files.walk(rootpath, maxDepth)) {
+	    	stream.forEach(System.out::println);
+	    } catch (Exception e) {
+	    	System.err.println(e);
+	    }
 
+	}
+	
+	private static void tryStreamFilesLines() {
+		System.out.println("******* TryStreamFilesFind *******");
+		
+		Path path = Paths.get("sample.txt");
+
+	    try (Stream<String> stream = Files.lines(path)) {
+	        stream.forEach(System.out::println);
+	    } catch (Exception e) {
+	    	System.err.println(e);
+	    }
+
+	}
 }
