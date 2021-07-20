@@ -109,8 +109,14 @@ public class TryDemoNIO {
 	private static void tryPathResolve() {
 		System.out.println("******* TryPathResolve *******");
 		Path path = Paths.get("sample-dir");
-		Path npath = path.resolve("dummy-2.txt");
-		System.out.println(npath);
+		{
+			Path npath = path.resolve("dummy-2.txt");
+			System.out.println(npath);
+		}
+		{
+			Path npath = path.resolve("/var");
+			System.out.println(npath); // Will return /var
+		}
 	}
 	
 	private static void tryPathFactory() {
