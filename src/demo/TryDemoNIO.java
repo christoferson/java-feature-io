@@ -17,9 +17,13 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import demo.model.AutoCloseableFaultyResource;
+import demo.model.AutoCloseableResource;
 
 public class TryDemoNIO {
 
@@ -47,7 +51,7 @@ public class TryDemoNIO {
 		list.add(TryDemoNIO::tryStreamFilesFind);
 		list.add(TryDemoNIO::tryStreamFilesWalk);
 		list.add(TryDemoNIO::tryStreamFilesLines);
-		
+		list.add(TryDemoNIO::tryAutoCloseable);
 		for (var r : list) {
 			r.run();
 		}
@@ -332,5 +336,38 @@ public class TryDemoNIO {
 	    	System.err.println(e);
 	    }
 
+	}
+	
+	private static void tryAutoCloseable() {
+		System.out.println("******* TryAutoCloseable *******");
+
+	    try (var r1 = new AutoCloseableResource("r1"); var r2 = new AutoCloseableResource("r2")) {
+	        r1.connect();
+	        r2.connect();
+	    } catch (Exception e) {
+	    	System.err.println(e);
+	    }
+	    
+	    var r3 = new AutoCloseableResource("r3");
+	    try (r3) {
+	    	r3.connect();
+	    } catch (Exception e) {
+	    	System.err.println(e);
+	    }
+
+	    try (var r4 = new AutoCloseableResource("r4")) {
+	    	r4.connect();
+	    	r4.query();
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    }
+	    
+	    try (var r5 = new AutoCloseableFaultyResource("r5")) {
+	    	r5.connect();
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    	Arrays.asList(e.getSuppressed()).stream()
+	    		.forEach(se -> System.err.println(String.format("Suppresed: %s", se)));
+	    }
 	}
 }
